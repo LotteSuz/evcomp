@@ -27,10 +27,11 @@ env.play()
 # ini = time.time()
 
 # define parameters
+## n_vars = 265 in opt_spec_demo.py
 n_hidden = 10
 
-## n_vars = 265 in opt_spec_demo.py =
 # run simulation
+f,p,e,t = env.play(pcont=x)
 # normalize (to avoid negative probabilities of survival)
 # evaluation (calculates performance of every agent)
 # tournament (pick 2 players, keep the fittest aka natural selection)
