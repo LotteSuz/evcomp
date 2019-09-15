@@ -4,10 +4,14 @@
 # karine.smiras@gmail.com      #
 ################################
 
+print('poop')
+
 # imports framework
 import sys, os
 sys.path.insert(0, 'evoman')
 from environment import Environment
+
+print('poop')
 
 # import libraries
 import time
@@ -16,7 +20,9 @@ from math import fabs,sqrt
 import glob, os
 from controller_specialist_demo import player_controller
 
-experiment_name = 'dummy_demo'
+print('poop')
+
+experiment_name = 'dummy_demo_lau'
 if not os.path.exists(experiment_name):
     os.makedirs(experiment_name)
 
@@ -30,13 +36,7 @@ def init_pop(pop_size, env):
 
 
 # initializes environment with ai player using random controller, playing against static enemy
-env = Environment(experiment_name=experiment_name,
-                  enemies=[2],
-                  playermode="ai",
-                  player_controller=player_controller(),
-                  enemymode="static",
-                  level=2,
-                  speed="fastest")
+#env = Environment(experiment_name=experiment_name,solutions = None)
 pop = init_pop(10,env)
 print(len(pop))
 
