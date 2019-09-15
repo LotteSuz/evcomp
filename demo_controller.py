@@ -18,6 +18,7 @@ class player_controller(Controller):
 			# Preparing the weights and biases from the controller of layer 1
 
 			# Biases for the n hidden neurons
+			#print(f"reshape function: {n_hidden[0]}")
 			bias1 = controller[:self.n_hidden[0]].reshape(1,self.n_hidden[0])
 			## print(f"bias1 = {bias1}")
 			## bias1 is the same everytime = a list of a list with 10 entries (one for each layer)
@@ -68,7 +69,7 @@ class player_controller(Controller):
 			release = 1
 		else:
 			release = 0
-		print(f"{[left, right, jump, shoot, release]}")
+		# print(f"{[left, right, jump, shoot, release]}")
 		return [left, right, jump, shoot, release]
 
 # implements controller structure for enemy
