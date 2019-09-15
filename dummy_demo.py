@@ -29,7 +29,7 @@ env = Environment(experiment_name='saturday',
                   level=1,
                   speed="fastest")
 
-# THIS RUNS THE VISUALIZATION
+
 #env.play()
 
 # set time marker
@@ -55,11 +55,7 @@ def evaluate(pop):
 
 def crossover(agent_x, agent_y):
     ind = np.random.randint(1,n_vars-2)
-    new_agent = [agent_x[1:ind] + agent_y[ind+1:len(agent_y)]]
-    #new_agent.append(agent_x[1:ind])
-    #new_agent.append(agent_y[ind+1:len(agent_y)])
-    #agent_x[1:ind] + agent_y[ind+1:len(agent_y)]
-    print(f"newagent = {len(new_agent)}")
+    new_agent = np.concatenate((agent_x[:ind], agent_y[ind:]), axis=None)
     return new_agent
 
 
@@ -69,11 +65,3 @@ def crossover(agent_x, agent_y):
 pop = np.random.uniform(dom_l, dom_u, (n_pop, n_vars))
 evaluate(pop)
 crossover(random.choice(pop), random.choice(pop))
-
-
-# normalize (to avoid negative probabilities of survival)
-# evaluation (calculates performance of every agent)
-# tournament (pick 2 players, keep the fittest aka natural selection)
-# limits ?
-# crossover (recombination & mutation)
-# kill worst genomes > replace with new best/random solutions

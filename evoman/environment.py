@@ -3,7 +3,7 @@
 # Author: Karine Miras         #
 # karine.smiras@gmail.com      #
 ################################
-
+### self.screen makes the visualization comeup
 import sys
 import gzip
 import pickle
@@ -15,6 +15,10 @@ import tmx
 
 from player import *
 from controller import Controller
+
+# disable the visualization
+import os
+os.environ["SDL_VIDEODRIVER"] = "dummy"
 
 
 # main class
@@ -34,7 +38,7 @@ class Environment(object):
                  speed="fastest",             # normal or fastest
                  inputscoded="no",            # yes or no
                  randomini="no",              # yes or no
-                 sound="on",                  # on or off
+                 sound="off",                  # on or off
                  contacthurt="player",        # player or enemy
                  logs="on",                   # on or off
                  savelogs="yes",              # yes or no
