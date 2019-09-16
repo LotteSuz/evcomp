@@ -40,7 +40,7 @@ n_hidden = 10
 n_vars = (env.get_num_sensors()+1)*n_hidden + (n_hidden+1)*5 # multilayer with 10 hidden neurons
 dom_u = 1
 dom_l = -1
-n_pop = 2
+n_pop = 10
 n_gen = 30
 mutation = 0.2
 last_best = 0
@@ -58,10 +58,28 @@ def crossover(agent_x, agent_y):
     new_agent = np.concatenate((agent_x[:ind], agent_y[ind:]), axis=None)
     return new_agent
 
-
-
+def make_children(pop, fitness, n_pop):
+    # order list from high to low fitness ;
+    kids = []
+    fitness,pop = zip(*sorted(zip(fitness,pop),key = lambda fit:fit[0],reverse = True))
+    chance = [(float(i)-fitness[-1]) / (fitness[0] - fitness[-1]) for i in fitness]
+    cumchance = np.cumsum(chance)
+    n_kids = int(0.25 * n_pop)
+    for i in range(n_kids):
+       first = random.uniform(0, cumchance[-1])
+       second = random.uniform(0, cumchance[-1])
+       for i in range(len(cumchance)):
+           if first < cumchance[i]:
+               ind1 = i
+               break
+       for i in range(len(cumchance)):
+           if second < cumchance[i]:
+               ind2 = i
+               break
+       kids.append(crossover(pop[ind1], pop[ind2]))
+    return kids
 
 # instantiate population
 pop = np.random.uniform(dom_l, dom_u, (n_pop, n_vars))
-evaluate(pop)
-crossover(random.choice(pop), random.choice(pop))
+fitness = evaluate(pop)
+kids = make_children(pop, fitness, n_pop)
