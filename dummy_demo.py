@@ -83,3 +83,5 @@ def make_children(pop, fitness, n_pop):
 pop = np.random.uniform(dom_l, dom_u, (n_pop, n_vars))
 fitness = evaluate(pop)
 kids = make_children(pop, fitness, n_pop)
+
+# correlated mutations
