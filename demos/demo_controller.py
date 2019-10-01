@@ -1,5 +1,6 @@
 from controller import Controller
 import numpy as np
+import time
 
 def sigmoid_activation(x):
 	return 1./(1.+np.exp(-x))
@@ -69,7 +70,7 @@ class player_controller(Controller):
 			release = 1
 		else:
 			release = 0
-		# print(f"{[left, right, jump, shoot, release]}")
+		#print(f"{[left, right, jump, shoot, release]}")
 		return [left, right, jump, shoot, release]
 
 # implements controller structure for enemy

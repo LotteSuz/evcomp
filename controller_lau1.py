@@ -20,7 +20,6 @@ class controller_automata(Controller):
         
 		# reduce to string :
         binned_inputs = reduce(lambda x,y:str(x) + str(y),binned_inputs)
-
         return controller[binned_inputs]
 
 # implements controller structure for enemy
