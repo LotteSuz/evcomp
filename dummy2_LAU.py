@@ -160,9 +160,9 @@ def kill(pop,fitness,kids):
     return pop,fitness
 
 def new_genes(pop):
-    n_toreplace = .2 * len(pop)
-    for i in range(len(n_toreplace)):
-        victim = random.randint(len(pop)-1)
+    n_toreplace = int(.2 * len(pop))
+    for i in range(n_toreplace):
+        victim = np.random.randint(len(pop)-1)
         pop[victim] = create_random_rulebook()
     return pop
 
@@ -171,7 +171,7 @@ def evolve():
     # params
     global n_point_mut, n_pop, n_gen,mutation,n_rules
     n_point_mut = 50
-    n_pop = 10
+    n_pop = 20
     n_gen = 20
     mutation = 0.5
     n_rules = 1048576
@@ -203,10 +203,13 @@ def evolve():
         # kill some peeps
         pop,fitness = kill(pop,fitness,kids)
         t5 = time.time()
+        #random substitution of agents : 
+        pop = new_genes(pop)
         print('Killed in :',round(t5-t4,3))
+
     fittest_ind = np.argmax(fitness)
 
-    return pop[fittest_ind],best_fitness,fitness
+    return pop[fittest_ind],best_fitness,fitnesses
 
 
 if __name__ == "__main__":
