@@ -51,29 +51,15 @@ def create_random_rulebook():
     return rulebook
 
 
-    # # list of keys :
-    # keys = list(product([0,1], repeat=20))
-    # # possible outputs :
-    # outputs = list(product([0,1], repeat=5))
-
-    # # convert to lists :
-    # keys = [reduce(lambda x,y:str(x) + str(y),k) for k in keys]
-    # outputs = [list(o) for o in outputs]
-    # # iteratively create dict with random outputs:
-    # for key in keys:
-    #     ind = random.randint(0,24)
-    #     rulebook[key] = outputs[ind]
-    # print('Creating Rulebook')
-    # return rulebook
-
-
 def evaluate(pop):
     fitness = []
+    player_live = []
     for agent in pop:
         f,p,e,t = env.play(pcont=agent)
         fitness.append(f)
-    print(f"best fitness = {max(fitness)}")
-    return fitness
+        player_live.append(p)
+    #print(f"best fitness = {max(fitness)}")
+    return fitness,player_live
 
 def crossover(agent_x, agent_y):
     new_agent = {}
@@ -99,7 +85,7 @@ def make_children(pop, fitness, n_pop):
     # don't normalize anymore
     #chance = [(float(i)-fitness[-1]) / (fitness[0] - fitness[-1]) for i in fitness]
     chance = np.cumsum(fitness)
-    n_kids = int(0.35 * n_pop)
+    n_kids = int(frac_kids * n_pop)
     for i in range(n_kids):
         while True:
             first = random.uniform(0, chance[-1])
@@ -121,7 +107,7 @@ def make_children(pop, fitness, n_pop):
         print(ind1,ind2)
     return kids
 
-def mutate(kids,n_flip):
+def mutate(kids,n_flip,mutation):
     to_mutate = int(mutation*len(kids))
     mutated_kids = []
     #list of keys and possible outputes :
@@ -144,7 +130,7 @@ def mutate(kids,n_flip):
 
 def kill(pop,fitness,kids):
     fitness, pop = order_to_fitness(fitness,pop)
-    kids_fitness = evaluate(kids)
+    kids_fitness,x = evaluate(kids)
     kids_fitness,kids = order_to_fitness(kids_fitness,kids)
     #print('list of population fitnes ;',fitness)
     #print('list of kids fitness ; ',kids_fitness)
@@ -167,64 +153,89 @@ def new_genes(pop):
     return pop
 
 
-def evolve():
+def evolve(n_point_mut,mutation):#n_point_mut,mutation
     # params
-    global n_point_mut, n_pop, n_gen,mutation,n_rules
-    n_point_mut = 10000
-    n_pop = 20
-    n_gen = 30
-    mutation = 0.2
-    n_rules = 1048576
+    global n_pop, n_gen,n_rules, frac_kids
+    frac_kids = .2
+    #n_point_mut = 10000
+    n_pop = 16
+    n_gen = 20
+    #mutation = 0.2
+    n_rules = 1048575
     t0 = time.time()
     pop = [create_random_rulebook() for i in range(n_pop)]
     fitnesses = []
     best_fitness = []
-
+    av_fitnesses = []
+    generation_lives = []
     #Evolve
     for i in range(n_gen):
         # evaluate population
         t0 = time.time()
-        fitness = evaluate(pop)
+        fitness,player_lives = evaluate(pop)
         t1 = time.time()
         print('Evaluated in :',round(t1-t0,3))
-        fitnesses.append(np.average(fitness))
+
+        fitnesses.append(fitness)
+        generation_lives.append(player_lives)
+        av_fitnesses.append(np.average(fitness))
         best_fitness.append(max(fitness))
+
         print('BEST_FITNESS : ', max(fitness))
         print('AVERAGE_FITNESS : ',np.average(fitness))
-        # reproduce :
+
+        # reproduce : 
         t2 = time.time()
         kids = make_children(pop, fitness, n_pop)
         t3 = time.time()
-        print('Reproduced in :',round(t3-t2,3))
+
         # mutate :
-        kids = mutate(kids,n_point_mut)
+        kids = mutate(kids,n_point_mut,mutation)
         t4 = time.time()
-        print('Mutated in :',round(t4-t3,3))
+
         # kill some peeps
         pop,fitness = kill(pop,fitness,kids)
         t5 = time.time()
         #random substitution of agents : 
         pop = new_genes(pop)
-        print('Killed in :',round(t5-t4,3))
 
+        t5 = time.time()
+        elap_time = round(t5-t0,3)
+        print('Finished round %i'%i, 'in %s'%elap_time)
     fittest_ind = np.argmax(fitness)
 
-    return pop[fittest_ind],best_fitness,fitnesses
+    return pop[fittest_ind],best_fitness,fitnesses,av_fitnesses,generation_lives
 
 
 if __name__ == "__main__":
 
-    pop,best_fitness,fitness = evolve()
-    plt.plot(best_fitness, label = "fittest")
-    plt.plot(fitness, label = "average")
-    plt.legend()
-    plt.show()
-    outfile = "populations/Contrlau_fittest_agent2.p"
-    result_out = "results/Contrlau_best_fit1.p"
-    result_out2 = "results/Contlr_fitness1.p"
-    pkl.dump(pop,open(outfile, 'wb'))
-    pkl.dump(best_fitness,open(result_out,'wb'))
-    pkl.dump(fitness,open(result_out2,'wb'))
+    frac_mut_list = [.1,.2,.4,.8,1.]#.2,.4,.8,1.
+    n_to_flip = [1000,10000,50000]#,10000,50000
+    data_dict = {}
+    count = 0
+    for frac_mut in frac_mut_list:
+        for to_flip in n_to_flip:
+            t1 = time.time()
+            individ,best,fitnesses,av_fitnesses,generation_lives = evolve(to_flip,frac_mut)
+            data_dict[str(frac_mut)+ str(to_flip)] = [fitnesses,generation_lives]
+            t2 = time.time()
+            count += 1
+            print("Round : %i"%count,"finished in : %s"%round(t2 - t1,3))
+
+
+    outfile = "results/data_dict_grid_newagents.pkl"
+    pkl.dump(data_dict,open(outfile,'wb'))
+    # pop,best_fitness,fitnesses,av_fitnesses = evolve(10000,.2)
+    # plt.plot(best_fitness, label = "fittest")
+    # plt.plot(av_fitnesses, label = "average")
+    # plt.legend()
+    # plt.show()
+    # outfile = "populations/Contrlau_fittest_agent_nonewagents.p"
+    # result_out = "results/Contrlau_best_fit_pmu10000_rmu02_newagents.p"
+    # result_out2 = "results/Contlr_allfitness1_mu10000_nonewagents.p"
+    # pkl.dump(pop,open(outfile, 'wb'))
+    # pkl.dump(best_fitness,open(result_out,'wb'))
+    # pkl.dump(fitnesses,open(result_out2,'wb'))
 
 
 
