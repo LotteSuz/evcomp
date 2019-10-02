@@ -16,6 +16,9 @@ from math import fabs,sqrt
 import glob, os
 import random
 import pickle as pkl
+import multiprocessing
+from joblib import Parallel, delayed
+
 
 experiment_name = 'dummy_demo'
 if not os.path.exists(experiment_name):
@@ -159,7 +162,7 @@ def evolve(n_point_mut,mutation):#n_point_mut,mutation
     frac_kids = .2
     #n_point_mut = 10000
     n_pop = 16
-    n_gen = 20
+    n_gen = 25
     #mutation = 0.2
     n_rules = 1048575
     t0 = time.time()
@@ -204,20 +207,26 @@ def evolve(n_point_mut,mutation):#n_point_mut,mutation
         print('Finished round %i'%i, 'in %s'%elap_time)
     fittest_ind = np.argmax(fitness)
 
-    return pop[fittest_ind],best_fitness,fitnesses,av_fitnesses,generation_lives
+    return [pop[fittest_ind],best_fitness,fitnesses,av_fitnesses,generation_lives]
 
 
 if __name__ == "__main__":
-
-    frac_mut_list = [.1,.2,.4,.8,1.]#.2,.4,.8,1.
-    n_to_flip = [1000,10000,50000]#,10000,50000
+    
+    num_cores = multiprocessing.cpu_count()
+    frac_mut_list = [.1]#,.3,.9
+    n_to_flip = [1000]#,10000,50000
     data_dict = {}
     count = 0
     for frac_mut in frac_mut_list:
+        # processed_list = Parallel(n_jobs=num_cores)(delayed(evolve)(toflip,frac_mut) for toflip in n_to_flip)
+        # data_dict[(str(frac_mut) + '1000')] = processed_list[0][-2:]
+        # data_dict[str(frac_mut) + '10000'] = processed_list[1][-2:]
+        # data_dict[str(frac_mut) + '50000'] = processed_list[2][-2:]
+
         for to_flip in n_to_flip:
             t1 = time.time()
-            individ,best,fitnesses,av_fitnesses,generation_lives = evolve(to_flip,frac_mut)
-            data_dict[str(frac_mut)+ str(to_flip)] = [fitnesses,generation_lives]
+            individ,best,fitnesses,av_fitnesses, gen_lives = evolve(to_flip,frac_mut)
+            data_dict[str(frac_mut)+ str(to_flip)] = [fitnesses,gen_lives]
             t2 = time.time()
             count += 1
             print("Round : %i"%count,"finished in : %s"%round(t2 - t1,3))
