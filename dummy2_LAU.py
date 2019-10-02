@@ -51,15 +51,15 @@ def create_random_rulebook():
     return rulebook
 
 
-    # # list of keys : 
+    # # list of keys :
     # keys = list(product([0,1], repeat=20))
-    # # possible outputs : 
+    # # possible outputs :
     # outputs = list(product([0,1], repeat=5))
 
     # # convert to lists :
     # keys = [reduce(lambda x,y:str(x) + str(y),k) for k in keys]
     # outputs = [list(o) for o in outputs]
-    # # iteratively create dict with random outputs: 
+    # # iteratively create dict with random outputs:
     # for key in keys:
     #     ind = random.randint(0,24)
     #     rulebook[key] = outputs[ind]
@@ -94,7 +94,7 @@ def make_children(pop, fitness, n_pop):
     kids = []
     fitness,pop = order_to_fitness(fitness,pop)
 
-    # shift fitness distributeion to possitive values : 
+    # shift fitness distributeion to possitive values :
     fitness = [i + abs(min(fitness)) for i in fitness]
     # don't normalize anymore
     #chance = [(float(i)-fitness[-1]) / (fitness[0] - fitness[-1]) for i in fitness]
@@ -124,7 +124,7 @@ def make_children(pop, fitness, n_pop):
 def mutate(kids,n_flip):
     to_mutate = int(mutation*len(kids))
     mutated_kids = []
-    #list of keys and possible outputes : 
+    #list of keys and possible outputes :
     keys = list(kids[0].keys())
     outputs = list(product([0,1], repeat=5))
     # to lists
@@ -191,7 +191,7 @@ def evolve():
         best_fitness.append(max(fitness))
         print('BEST_FITNESS : ', max(fitness))
         print('AVERAGE_FITNESS : ',np.average(fitness))
-        # reproduce : 
+        # reproduce :
         t2 = time.time()
         kids = make_children(pop, fitness, n_pop)
         t3 = time.time()
