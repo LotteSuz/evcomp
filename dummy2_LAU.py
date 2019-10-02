@@ -135,7 +135,7 @@ def mutate(kids,n_flip):
             ind = np.random.randint(len(kids)-1)
         for j in range(n_flip):
             toflip = np.random.randint(n_rules)
-            random_out = np.random.randint(24)
+            random_out = np.random.randint(31)
             #print('fitnes before mutation : ',evaluate([kids[ind]]))
             kids[ind][keys[toflip]] = outputs[random_out]
             #print('fitness after mutation : ',evaluate([kids[ind]]))
@@ -170,10 +170,10 @@ def new_genes(pop):
 def evolve():
     # params
     global n_point_mut, n_pop, n_gen,mutation,n_rules
-    n_point_mut = 50
+    n_point_mut = 10000
     n_pop = 20
-    n_gen = 20
-    mutation = 0.5
+    n_gen = 30
+    mutation = 0.2
     n_rules = 1048576
     t0 = time.time()
     pop = [create_random_rulebook() for i in range(n_pop)]
@@ -219,7 +219,7 @@ if __name__ == "__main__":
     plt.plot(fitness, label = "average")
     plt.legend()
     plt.show()
-    outfile = "populations/Contrlau_fittest_agent.p"
+    outfile = "populations/Contrlau_fittest_agent2.p"
     result_out = "results/Contrlau_best_fit1.p"
     result_out2 = "results/Contlr_fitness1.p"
     pkl.dump(pop,open(outfile, 'wb'))
