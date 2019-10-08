@@ -1,0 +1,16 @@
+TODO
+
+ # Change evaluation function to evaluate different enemies
+
+ # Come up with ways to improve our algorithm (multi-parenting?, normal distribution for crossover, fitness function)
+
+ # Some proper parameter tuning (bigger grid, more repetitions per parameter combinatios)
+
+DILIVERABLES 
+
+ # One agent that performs best
+
+ # Same plots as before with more runs
+
+ # Report
+
