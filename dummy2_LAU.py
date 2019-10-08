@@ -161,8 +161,8 @@ def evolve(n_point_mut,mutation):#n_point_mut,mutation
     global n_pop, n_gen,n_rules, frac_kids
     frac_kids = .2
     #n_point_mut = 10000
-    n_pop = 16
-    n_gen = 25
+    n_pop = 20
+    n_gen = 30
     #mutation = 0.2
     n_rules = 1048575
     t0 = time.time()
@@ -177,15 +177,15 @@ def evolve(n_point_mut,mutation):#n_point_mut,mutation
         t0 = time.time()
         fitness,player_lives = evaluate(pop)
         t1 = time.time()
-        print('Evaluated in :',round(t1-t0,3))
+        #print('Evaluated in :',round(t1-t0,3))
 
         fitnesses.append(fitness)
         generation_lives.append(player_lives)
         av_fitnesses.append(np.average(fitness))
         best_fitness.append(max(fitness))
 
-        print('BEST_FITNESS : ', max(fitness))
-        print('AVERAGE_FITNESS : ',np.average(fitness))
+        #print('BEST_FITNESS : ', max(fitness))
+        #print('AVERAGE_FITNESS : ',np.average(fitness))
 
         # reproduce : 
         t2 = time.time()
@@ -204,7 +204,7 @@ def evolve(n_point_mut,mutation):#n_point_mut,mutation
 
         t5 = time.time()
         elap_time = round(t5-t0,3)
-        print('Finished round %i'%i, 'in %s'%elap_time)
+        #print('Finished round %i'%i, 'in %s'%elap_time)
     fittest_ind = np.argmax(fitness)
 
     return [pop[fittest_ind],best_fitness,fitnesses,av_fitnesses,generation_lives]
@@ -213,27 +213,32 @@ def evolve(n_point_mut,mutation):#n_point_mut,mutation
 if __name__ == "__main__":
     
     num_cores = multiprocessing.cpu_count()
-    frac_mut_list = [.1]#,.3,.9
-    n_to_flip = [1000]#,10000,50000
-    data_dict = {}
+    frac_mut_list = [.3]#,.3,.9
+    n_to_flip = [50000]#,10000,50000
+    fitnes_list = []
+    live_list = []
     count = 0
-    for frac_mut in frac_mut_list:
+    #for frac_mut in frac_mut_list:
         # processed_list = Parallel(n_jobs=num_cores)(delayed(evolve)(toflip,frac_mut) for toflip in n_to_flip)
         # data_dict[(str(frac_mut) + '1000')] = processed_list[0][-2:]
         # data_dict[str(frac_mut) + '10000'] = processed_list[1][-2:]
         # data_dict[str(frac_mut) + '50000'] = processed_list[2][-2:]
 
-        for to_flip in n_to_flip:
-            t1 = time.time()
-            individ,best,fitnesses,av_fitnesses, gen_lives = evolve(to_flip,frac_mut)
-            data_dict[str(frac_mut)+ str(to_flip)] = [fitnesses,gen_lives]
-            t2 = time.time()
-            count += 1
-            print("Round : %i"%count,"finished in : %s"%round(t2 - t1,3))
+    for run in range(10):
+        t1 = time.time()
+        individ,best,fitnesses,av_fitnesses, gen_lives = evolve(1000,.9)
+        fitnes_list.append(fitnesses)
+        live_list.append(gen_lives)
+        #data_dict[str(frac_mut)+ str(to_flip)] = [fitnesses,gen_lives]
+        t2 = time.time()
+        #count += 1
+        print("Round : %i"%run,"finished in : %s"%round(t2 - t1,3))
 
 
-    outfile = "results/data_dict_grid_newagents.pkl"
-    pkl.dump(data_dict,open(outfile,'wb'))
+    outfile = "results/data_fitness_newagents_10runs2.pkl"
+    outfile2 = "results/data_lives_newagents_10runs2.pkl"
+    pkl.dump(fitnes_list,open(outfile,'wb'))
+    pkl.dump(live_list,open(outfile2,'wb'))
     # pop,best_fitness,fitnesses,av_fitnesses = evolve(10000,.2)
     # plt.plot(best_fitness, label = "fittest")
     # plt.plot(av_fitnesses, label = "average")
