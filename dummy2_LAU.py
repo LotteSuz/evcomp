@@ -55,6 +55,9 @@ def create_random_rulebook():
 
 
 def evaluate(pop):
+    # take random enimy 
+    env.update_parameter('enemies',[np.random.randint(10)])
+    
     fitness = []
     player_live = []
     for agent in pop:
