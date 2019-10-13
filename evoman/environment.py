@@ -8,7 +8,12 @@ import sys
 import gzip
 import pickle
 import numpy
-import pygame
+import contextlib
+
+# prevents pygame prints to stdout when importing
+with contextlib.redirect_stdout(None):
+    import pygame
+
 from pygame.locals import *
 import struct
 import tmx
