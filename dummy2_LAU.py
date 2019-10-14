@@ -26,7 +26,6 @@ if not os.path.exists(experiment_name):
 
 # initializes environment with ai player using random controller, playing against static enemy
 env = Environment(experiment_name='saturday',
-                  enemies=[2],
                   player_controller=controller_automata(),
                   level=2,
                   speed="fastest")
@@ -55,9 +54,9 @@ def create_random_rulebook():
 
 
 def evaluate(pop):
-    # take random enimy 
-    env.update_parameter('enemies',[np.random.randint(10)])
-    
+    # take random enemy 
+    env.update_parameter('enemies',[np.random.randint(1,9)])
+
     fitness = []
     player_live = []
     for agent in pop:
@@ -164,7 +163,7 @@ def evolve(n_point_mut,mutation):#n_point_mut,mutation
     global n_pop, n_gen,n_rules, frac_kids
     frac_kids = .2
     #n_point_mut = 10000
-    n_pop = 20
+    n_pop = 10
     n_gen = 30
     #mutation = 0.2
     n_rules = 1048575
@@ -238,8 +237,8 @@ if __name__ == "__main__":
         print("Round : %i"%run,"finished in : %s"%round(t2 - t1,3))
 
 
-    outfile = "results/data_fitness_newagents_10runs2.pkl"
-    outfile2 = "results/data_lives_newagents_10runs2.pkl"
+    outfile = "results/data_multentest.pkl"
+    outfile2 = "results/data_multentest2.pkl"
     pkl.dump(fitnes_list,open(outfile,'wb'))
     pkl.dump(live_list,open(outfile2,'wb'))
     # pop,best_fitness,fitnesses,av_fitnesses = evolve(10000,.2)
