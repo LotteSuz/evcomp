@@ -189,6 +189,8 @@ def evolve(n_point_mut,mutation,number_agents,number_gen):
     fittest_ind = np.argmax(fitness)
     fittest_value = max(fitness)
         #np.savetxt('results/bestalllgens_temp.txt',pop[fittest_ind])
+    outfile = "results/EA3data.pkl"
+    pkl.dump(fittest_value,pop[fittest_ind],best_fitness,fitnesses,av_fitnesses,generation_lives,open(outfile,'wb'))
 
     return [fittest_value,pop[fittest_ind],best_fitness,fitnesses,av_fitnesses,generation_lives]
 
@@ -196,3 +198,4 @@ if __name__ == "__main__":
 
     best_sol,best_individ,best,fitnesses,av_fitnesses, gen_lives = evolve(121,.9,30,100)
     np.savetxt('results/bestpallgenall.txt',best_individ)
+

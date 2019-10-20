@@ -42,21 +42,6 @@ class Algoritme2:
         self.ini = time.time()
 
 
-    # def create_random_rulebook():
-    #     """Initializes a genotype for one agent, returns this agent a dictionary."""
-    #     t0 = time.time()
-    #     rulebook = {}
-    #     # iterate over possible inputs
-    #     for i in range(1048575):
-    #         key = str(bin(i))[2:].zfill(20)
-    #         outputstring  = list(bin(np.random.randint(31))[2:].zfill(5))
-    #         # convert to list of ints
-    #         output = [int(i) for i in outputstring]
-    #         rulebook[key] = output
-    #     t1 = time.time()
-    #     return rulebook
-
-
     def evaluate(self,pop):
         """Takes in a list of the population, simulates their performance,
         and returns a list of the fitness scores of each member of the population."""
@@ -69,13 +54,14 @@ class Algoritme2:
             agent_life = []
 
             # enemy 1
-            self.env.update_parameter('enemies', [1])
+            enemies = random.sample(range(1,9),2)
+            self.env.update_parameter('enemies', [enemies[0]])
             f, p, e, t = self.env.play(pcont=agent)
             agent_fitness.append(f)
             agent_life.append(p)
 
             # enemy 5
-            self.env.update_parameter('enemies', [5])
+            self.env.update_parameter('enemies', [enemies[1]])
             f, p, e, t = self.env.play(pcont=agent)
             # remember fitness
             agent_fitness.append(f)
@@ -87,24 +73,6 @@ class Algoritme2:
         return fitness, player_live
 
 
-    # def crossover(agent_x, agent_y): OLD
-    #     """Takes in two agents, recombines their genes at a random point,
-    #     and returns two offspring."""
-    #     new_agent = {}
-    #     new_agent_two = {}
-    #     len_dict = len(list(agent_x.values()))
-    #     keys = list(agent_x.keys())
-    #     ind = np.random.randint(1,len_dict)
-    #     # create first kid
-    #     other_controls_first = list(agent_x.values())[:ind] + list(agent_y.values())[ind:]
-    #     for i in range(len_dict):
-    #         new_agent[keys[i]] = other_controls_first[i]
-    #     # create second kid
-    #     ind2 = np.random.randint(1,len_dict)
-    #     other_controls_second = list(agent_x.values())[:ind] + list(agent_y.values())[ind:]
-    #     for j in range(len_dict):
-    #         new_agent_two[keys[j]] = other_controls_second[j]
-    #     return new_agent, new_agent_two
 
     def crossover(self,agent_x, agent_y):
         ind = np.random.randint(1, n_vars - 2)
@@ -213,6 +181,26 @@ class Algoritme2:
                     pop[fam[2]] = kids[fam[1]]
         return pop
 
+    def kill(self,pop,fitness,kids):
+        fitness, pop = self.order_to_fitness(fitness,pop)
+        kids_fitness ,x = self.evaluate(kids)
+        kids_fitness, kids = self.order_to_fitness(kids_fitness, kids)
+        index = 0
+        for i in range(len(kids)):
+            for j in range(index,len(pop)):
+                if kids_fitness[i] > fitness[j]:
+                    pop[j] = kids[i]
+                    fitness[j] = kids_fitness[i]
+                    index = j
+                    break
+        return pop,fitness
+
+    def new_genes(self,pop):
+        n_toreplace = int(.2 * len(pop))
+        for i in range(n_toreplace):
+            victim = np.random.randint(len(pop) - 1)
+            pop[victim] = np.random.uniform(-1,1,265)
+        return pop
 
     def evolve(self,vector):
         n_point_mut, mutation, number_agents, number_gen = vector
@@ -256,52 +244,12 @@ class Algoritme2:
             # mutate  children
             kids = self.mutate(kids, int(n_point_mut), mutation)
             # select new generation
-            pop = self.crowding_selection(kids, pop, family)
+            #pop = self.crowding_selection(kids, pop, family)
+            pop,fitness = self.kill(pop,fitness,kids)
+            pop = self.new_genes(pop)
         fittest_ind = np.argmax(fitness)
         fittest_value = max(fitness)
 
         print('final fittest value: ',fittest_value)
         return [fittest_value]#, pop[fittest_ind], best_fitness, fitnesses, av_fitnesses, generation_lives]
 
-
-# if __name__ == "__main__":
-#
-#     pop,best_fitness,fitness = evolve()
-#     plt.plot(best_fitness, label = "fittest")
-#     plt.plot(fitness, label = "average")
-#     plt.legend()
-#     plt.show()
-#     outfile = "populations/Contrlau_fittest_agent.p"
-#     result_out = "results/Contrlau_best_fit1.p"
-#     result_out2 = "results/Contlr_fitness1.p"
-#     pkl.dump(pop,open(outfile, 'wb'))
-#     pkl.dump(best_fitness,open(result_out,'wb'))
-#     pkl.dump(fitness,open(result_out2,'wb'))
-# if __name__ == "__main__":
-#     m = sys.argv[1]
-#     m = eval(m.split()[0])
-#     # frac_mut_list = 0.9#,.3,.9
-#     #frac_mut_list = m[0]
-#     #n_to_flip = m[1]
-
-#     # n_to_flip = 1000#,10000,50000
-#     # fitness_list = []
-#     # lifes_list = []
-#     # count = 0
-
-#     # for i in range(9):
-#     #t1 = time.time()
-#     best_sol, best_individ, best, fitnesses, av_fitnesses, gen_lives = evolve(
-#         m[1], m[0], m[2], m[3])
-#     #best_sol,best_individ,best,fitnesses,av_fitnesses, gen_lives = evolve(m[1],m[0])
-#     print(200 - best_sol)
-    # fitness_list.append(fitnesses)
-    # lifes_list.append(gen_lives)
-    #t2 = time.time()
-    #count += 1
-    #print("Round : %i"%count,"finished in : %s"%round(t2 - t1,3))
-
-    # outfile = "results/algorithm_diversity_fitness_negen.pkl"
-    # pkl.dump(fitness_list,open(outfile,'wb'))
-    # outfile = "results/algorithm_diversity_lifes_negen.pkl"
-    # pkl.dump(lifes_list,open(outfile,'wb'))

@@ -10,8 +10,8 @@ class spotpy_setup(object):
         #n_point_mut, mutation, number_agents, number_gen
         spotpy.parameter.Uniform('PointMutations', 1, 266),
         spotpy.parameter.Uniform('mutation', 0, 1),
-        spotpy.parameter.Uniform('popsize', 10, 11),
-        spotpy.parameter.Uniform('generations', 10, 11)
+        spotpy.parameter.Uniform('popsize', 10, 50),
+        spotpy.parameter.Uniform('generations', 10, 50)
     ]
 
   def parameters(self):
@@ -32,7 +32,7 @@ class spotpy_setup(object):
 
 spotpy_setup = spotpy_setup()
 
-sampler = spotpy.algorithms.rope(spotpy_setup, dbname='fdsjk', dbformat='csv', parallel='mpi')
+sampler = spotpy.algorithms.rope(spotpy_setup, dbname='fdsjk', dbformat='csv')
 results = []
-sampler.sample()
+sampler.sample(100)
 results.append(sampler.getdata)
