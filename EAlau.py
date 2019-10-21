@@ -25,10 +25,11 @@ import multiprocessing
 #experiment_name = 'EA2'
 # if not os.path.exists(experiment_name):
 #    os.makedirs(experiment_name)
-class Algoritme2:
+class Algoritme1:
 
     def __init__(self):
-    
+        
+        self.result = []
 
         # initializes environment with ai player using self-made controller, playing against static enemy
         self.env = Environment(experiment_name='saturday',
@@ -202,7 +203,7 @@ class Algoritme2:
             pop[victim] = np.random.uniform(-1,1,265)
         return pop
 
-    def evolve(self,vector):
+    def evolve(self,vector,fname):
         n_point_mut, mutation, number_agents, number_gen = vector
         print(vector)
         # def evolve(n_point_mut,mutation):
@@ -233,23 +234,26 @@ class Algoritme2:
             print("NEW GENERATION ", i)
             # evaluate current population
             fitness, player_lives = self.evaluate(pop)
+            # save stats : 
             fitnesses.append(fitness)
             generation_lives.append(player_lives)
             av_fitnesses.append(np.average(fitness))
             best_fitness.append(max(fitness))
             print('BEST_FITNESS : ', max(fitness))
             print('AVERAGE_FITNESS : ',np.average(fitness))
+
             # reproduce
             kids, family = self.make_children(pop, fitness, n_pop)
             # mutate  children
             kids = self.mutate(kids, int(n_point_mut), mutation)
             # select new generation
-            #pop = self.crowding_selection(kids, pop, family)
             pop,fitness = self.kill(pop,fitness,kids)
             pop = self.new_genes(pop)
+
         fittest_ind = np.argmax(fitness)
         fittest_value = max(fitness)
 
         print('final fittest value: ',fittest_value)
-        return [fittest_value]#, pop[fittest_ind], best_fitness, fitnesses, av_fitnesses, generation_lives]
+        self.result = [fittest_value, pop[fittest_ind], best_fitness, fitnesses, av_fitnesses, generation_lives]
+        return self.result
 
