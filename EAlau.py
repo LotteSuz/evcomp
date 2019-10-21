@@ -205,22 +205,14 @@ class Algoritme1:
 
     def evolve(self,vector,fname):
         n_point_mut, mutation, number_agents, number_gen = vector
-        print(vector)
-        # def evolve(n_point_mut,mutation):
         """Does not take in arguments, runs the evolutionary algorithm and returns the best performing agent,
         a list of the best fitness of each generation and the fitnesses of the complete last generation."""
-        # define parameter
+        # define some parameters
         global n_pop, n_gen, n_vars
-        #n_point_mut = 50
         n_pop = int(number_agents)
         n_gen = int(number_gen)
-        #n_pop = 10
-        #n_gen = 2
-        #mutation = 0.2
         n_hidden = 10
         n_vars = (self.env.get_num_sensors() + 1) * n_hidden + (n_hidden + 1) * 5
-        print("n_vars = ", n_vars)
-        t0 = time.time()
         dom_u = 1
         dom_l = -1
         pop = np.random.uniform(dom_l, dom_u, (n_pop, n_vars))
@@ -228,6 +220,12 @@ class Algoritme1:
         best_fitness = []
         av_fitnesses = []
         generation_lives = []
+
+        # open files to write :
+        outfile1 = "results/EA1_allfitness" + fname + ".pkl"
+        outfile2 = "results/EA1_best_fitness" + fname + ".pkl"
+        outfile3 = "results/EA1_av_fitnness" + fname + ".pkl"
+        outfile4 = "results/EA1_lives" + fname + ".pkl"
 
         # run algorithms
         for i in range(n_gen):
@@ -250,10 +248,18 @@ class Algoritme1:
             pop,fitness = self.kill(pop,fitness,kids)
             pop = self.new_genes(pop)
 
+            # write to file : 
+            pkl.dump(fitnesses,open(outfile1,'wb'))
+            pkl.dump(best_fitness,open(outfile2,'wb'))
+            pkl.dump(av_fitnesses,open(outfile3,'wb'))
+            pkl.dump(generation_lives,open(outfile4,'wb'))
+
         fittest_ind = np.argmax(fitness)
         fittest_value = max(fitness)
 
         print('final fittest value: ',fittest_value)
         self.result = [fittest_value, pop[fittest_ind], best_fitness, fitnesses, av_fitnesses, generation_lives]
-        return self.result
+        final_file = "results/all_results" + fname + ".pkl"
+        pkl.dump(self.result, open(final_file, 'wb'))
+        #return self.result
 
